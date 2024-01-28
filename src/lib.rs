@@ -53,7 +53,7 @@ pub fn get_args() -> Result<Config> {
 pub fn run(config: Config) -> Result<()> {
     let files = find_files(&config.sources)?;
     let fortunes = read_fortunes(&files)?;
-    dbg!(fortunes.last());
+    dbg!(pick_fortune(&fortunes, config.seed));
     Ok(())
 }
 
@@ -65,9 +65,13 @@ fn read_fortunes(paths: &[PathBuf]) -> Result<Vec<Fortune>> {
     todo!()
 }
 
+fn pick_fortune(fortunes: &[Fortune], seed: Option<u64>) -> Option<String> {
+    todo!()
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{find_files, read_fortunes};
+    use super::{find_files, pick_fortune, read_fortunes, Fortune};
     use std::path::PathBuf;
 
     #[test]
@@ -145,5 +149,32 @@ mod tests {
         ]);
         assert!(res.is_ok());
         assert_eq!(res.unwrap().len(), 11);
+    }
+
+    #[test]
+    fn test_pick_fortune() {
+        // Fortuneのスライスを作成
+        let fortunes = &[
+            Fortune {
+                source: "fortunes".to_string(),
+                text: "You cannot achieve the impossible without \
+                      attempting the absurd."
+                    .to_string(),
+            },
+            Fortune {
+                source: "fortunes".to_string(),
+                text: "Assumption is the mother of all screw-ups.".to_string(),
+            },
+            Fortune {
+                source: "fortunes".to_string(),
+                text: "Neckties strangle clear thinking.".to_string(),
+            },
+        ];
+
+        // シードを与えて引用句を1つ選択
+        assert_eq!(
+            pick_fortune(fortunes, Some(1)).unwrap(),
+            "Neckties strangle clear thinking.".to_string()
+        );
     }
 }
