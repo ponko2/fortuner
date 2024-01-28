@@ -53,7 +53,18 @@ pub fn get_args() -> Result<Config> {
 pub fn run(config: Config) -> Result<()> {
     let files = find_files(&config.sources)?;
     let fortunes = read_fortunes(&files)?;
-    dbg!(pick_fortune(&fortunes, config.seed));
+    match config.pattern {
+        Some(pattern) => {
+            for fortune in fortunes {
+                // パターンに一致する引用句をすべて表示する
+                todo!();
+            }
+        }
+        None => {
+            // ランダムに1つ選んで表示する
+            todo!()
+        }
+    }
     Ok(())
 }
 
