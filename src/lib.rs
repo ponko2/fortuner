@@ -26,6 +26,12 @@ pub struct Config {
     seed: Option<u64>,
 }
 
+#[derive(Debug)]
+pub struct Fortune {
+    source: String,
+    text: String,
+}
+
 pub fn get_args() -> Result<Config> {
     let args = Args::parse();
     let pattern = args
@@ -46,7 +52,8 @@ pub fn get_args() -> Result<Config> {
 
 pub fn run(config: Config) -> Result<()> {
     let files = find_files(&config.sources)?;
-    dbg!(files);
+    let fortunes = read_fortunes(&files)?;
+    dbg!(fortunes.last());
     Ok(())
 }
 
@@ -54,9 +61,14 @@ fn find_files(paths: &[String]) -> Result<Vec<PathBuf>> {
     todo!()
 }
 
+fn read_fortunes(paths: &[PathBuf]) -> Result<Vec<Fortune>> {
+    todo!()
+}
+
 #[cfg(test)]
 mod tests {
-    use super::find_files;
+    use super::{find_files, read_fortunes};
+    use std::path::PathBuf;
 
     #[test]
     fn test_find_files() {
@@ -103,5 +115,35 @@ mod tests {
         if let Some(filename) = files.last().unwrap().file_name() {
             assert_eq!(filename.to_string_lossy(), "jokes".to_string())
         }
+    }
+
+    #[test]
+    fn test_read_fortunes() {
+        // 入力ファイルが1つだけの場合
+        let res = read_fortunes(&[PathBuf::from("./tests/inputs/jokes")]);
+        assert!(res.is_ok());
+
+        if let Ok(fortunes) = res {
+            // 数が正しいこととソートされていることを確認する
+            assert_eq!(fortunes.len(), 6);
+            assert_eq!(
+                fortunes.first().unwrap().text,
+                "Q. What do you call a head of lettuce in a shirt and tie?\n\
+                A. Collared greens."
+            );
+            assert_eq!(
+                fortunes.last().unwrap().text,
+                "Q: What do you call a deer wearing an eye patch?\n\
+                A: A bad idea (bad-eye deer)."
+            );
+        }
+
+        // 入力ファイルが複数の場合
+        let res = read_fortunes(&[
+            PathBuf::from("./tests/inputs/jokes"),
+            PathBuf::from("./tests/inputs/quotes"),
+        ]);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().len(), 11);
     }
 }
